@@ -67,9 +67,8 @@ export default function Home() {
       const y = event.clientY;
       if (spotlight) {
         // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(203, 199, 199, 0.2) 0%, transparent 40%)`;
-        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(140, 139, 139, 0.2) 0%, rgba(140, 139, 139, 0.2) 10%, transparent 40%)`;
-        spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(103, 103, 103, 0.2) 0%, rgba(103, 103, 103, 0.2) 2%, transparent 45%)`;
-        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(103, 103, 103, 0.2) 10%, rgba(103, 103, 103, 0.2) 10%, transparent 40%)`;
+        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(103, 103, 103, 0.2) 0%, rgba(103, 103, 103, 0.2) 2%, transparent 45%)`;
+        spotlight.style.background = `radial-gradient(80rem circle at ${x}px ${y}px, rgba(255,255,255,.09), transparent 40%)`;
       }
     };
 
