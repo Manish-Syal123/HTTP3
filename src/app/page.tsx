@@ -1,3 +1,5 @@
+"use client";
+import DeveloperTools from "@/components/DeveloperTools";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +17,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
   const features = [
@@ -56,9 +59,30 @@ export default function Home() {
     },
   ];
 
+  useEffect(() => {
+    const spotlight = document.getElementById("spotlight");
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const x = event.clientX;
+      const y = event.clientY;
+      if (spotlight) {
+        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(203, 199, 199, 0.2) 0%, transparent 40%)`;
+        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(140, 139, 139, 0.2) 0%, rgba(140, 139, 139, 0.2) 10%, transparent 40%)`;
+        spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(103, 103, 103, 0.2) 0%, rgba(103, 103, 103, 0.2) 2%, transparent 45%)`;
+        // spotlight.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(103, 103, 103, 0.2) 10%, rgba(103, 103, 103, 0.2) 10%, transparent 40%)`;
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
   return (
     <ThemeProvider attribute={"class"} defaultTheme="dark" enableSystem>
       <div className="min-h-screen p-8 pb-20 gap-16 sm:p-12 font-[family-name:var(--font-geist-sans)] bg-background text-foreground">
+        <div id="spotlight" className="fixed inset-0 pointer-events-none"></div>
         <header className="mb-12 text-center">
           <Image
             className="mx-auto text-white mb-4"
@@ -109,6 +133,12 @@ export default function Home() {
             </div>
           </section>
         </main>
+
+        <DeveloperTools />
+        {/*  */}
+        <footer className="mt-16 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} HTTP3. All rights reserved.</p>
+        </footer>
       </div>
     </ThemeProvider>
   );
