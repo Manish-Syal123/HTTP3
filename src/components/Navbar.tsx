@@ -11,7 +11,6 @@ import {
 import { Menu, LogIn, LogOut } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
-// import { createOrUpdateUser } from "@/utils/db/actions";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { createOrUpdateUser } from "../utils/db/actions";
 
 export default function Navbar() {
   const { login, logout, authenticated, user } = usePrivy();
@@ -42,20 +42,20 @@ export default function Navbar() {
   console.log("all about the users", user);
 
   const handleUserAuthenticated = async () => {
-    // if (user && user.wallet?.address) {
-    //   try {
-    //     await createOrUpdateUser(
-    //       user.wallet.address,
-    //       user.email?.address || ""
-    //     );
-    //     const hasClosedModal = localStorage.getItem("emailConfirmModalClosed");
-    //     if (!hasClosedModal) {
-    //       setShowEmailConfirmModal(true);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error updating user information:", error);
-    //   }
-    // }
+    if (user && user.wallet?.address) {
+      try {
+        await createOrUpdateUser(
+          user.wallet.address,
+          user.email?.address || ""
+        );
+        const hasClosedModal = localStorage.getItem("emailConfirmModalClosed");
+        if (!hasClosedModal) {
+          setShowEmailConfirmModal(true);
+        }
+      } catch (error) {
+        console.error("Error updating user information:", error);
+      }
+    }
   };
 
   const handleAuth = () => {
