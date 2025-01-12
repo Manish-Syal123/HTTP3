@@ -1,5 +1,6 @@
 "use client";
 import DeveloperTools from "@/components/DeveloperTools";
+import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,37 +81,49 @@ export default function Home() {
   }, []);
   return (
     <ThemeProvider attribute={"class"} defaultTheme="dark" enableSystem>
-      <div className="min-h-screen p-8 pb-20 gap-16 sm:p-12 font-[family-name:var(--font-geist-sans)] bg-background text-foreground">
-        <div id="spotlight" className="fixed inset-0 pointer-events-none"></div>
-        <header className="mb-12 text-center">
-          <Image
+      <div id="spotlight" className="fixed inset-0 pointer-events-none"></div>
+      <div className=" h-[170vh] absolute top-0 left-0 right-0 bottom-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+          // width="1920"
+          // height="1438"
+        >
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <div className="relative  top-24  w-[45%] left-9">
+        <header className="text-start absolute z-10 px-4">
+          {/* <Image
             className="mx-auto text-white mb-4"
             src="/svg/logo.svg"
             alt="http3 logo"
             width={70}
             height={40}
             priority
-          />
-          <h1 className="text-5xl max-w-3xl mx-auto font-bold mb-4">
-            The Future of Web3 Hosting on{" "}
-            <span className="text-primary">Smart Contracts</span>
+          /> */}
+          <h1 className="lg:text-6xl text-4xl font-bold mb-4 flex flex-col items-start justify-start">
+            The Future of Web3 Hosting on Smart Contracts
+            {/* <span className="text-primary">Smart Contracts</span> */}
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="lg:text-xl text-base text-muted-foreground mb-8 max-w-2xl mx-auto">
             Host your legacy websites like calculators and unit converters on
             the blockchain, absolutely free! No hosting fees, no expiration
             dates. Preserve your simple web projects forever with HTTP3's
             decentralized hosting.
           </p>
           <Link href={"/dashboard"}>
-            <Button size="lg" className="mr-4">
+            <Button size="lg" className="mr-4 rounded-full">
               Deploy for Free Now <ArrowRight className="ml-2" />
             </Button>
           </Link>
-          <Button size="lg" variant="outline">
-            Learn How It Works
-          </Button>
         </header>
-
+      </div>
+      {/* Features */}
+      <div className="p-8 mt-[167vh] pb-20 gap-16 sm:p-12 font-[family-name:var(--font-geist-sans)] text-foreground">
         <main className="max-w-6xl mx-auto">
           <section className="mb-16 text-center">
             <h2 className="text-3xl font-semibold mb-8">
