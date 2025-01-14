@@ -81,6 +81,7 @@ export default function Home() {
   }, []);
   return (
     <ThemeProvider attribute={"class"} defaultTheme="dark" enableSystem>
+      <Navbar />
       <div id="spotlight" className="fixed inset-0 pointer-events-none"></div>
       <div className=" h-[170vh] absolute top-0 left-0 right-0 bottom-0">
         <video

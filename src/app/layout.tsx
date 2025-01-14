@@ -52,7 +52,7 @@ export default function RootLayout({
               },
             }}
           >
-            <Navbar />
+            {/* <Navbar /> */}
             {children}
           </PrivyProvider>
         </ThemeProvider>
