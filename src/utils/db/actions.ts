@@ -1,3 +1,4 @@
+"use server";
 import { config } from "dotenv";
 config();
 
@@ -28,7 +29,8 @@ export async function initializeClients(userEmail: string) {
   const signer = await provider.getSigner();
 
   contract = new ethers.Contract(
-    process.env.Smart_contract_Deployed_Address!,
+    // process.env.Smart_contract_Deployed_Address!,
+    "0x7be8dD25efAC4e9DF5651FbABf9EAc71A5E6C8bE",
     WebpageStorageABI.abi,
     signer
   );
