@@ -29,7 +29,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { usePrivy } from "@privy-io/react-auth";
-import { initializeClients } from "@/utils/db/actions";
+import {
+  createWebpageWithName,
+  getUserIdByEmail,
+  getUserWebpages,
+  initializeClients,
+} from "@/utils/db/actions";
+import DeploymentVisual from "@/components/DeploymentVisual";
 
 type Webpage = {
   webpages: {
@@ -65,6 +71,9 @@ const Dashboard = () => {
   const [deployedUrl, setDeployedUrl] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
   const [livePreview, setLivePreview] = useState(code);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [w3name, setW3name] = useState<string | null>(null);
+  const [userWebpages, setUserWebpages] = useState<Webpage[]>([]);
   const [content, setContent] = useState("");
   const [deploymentError, setDeploymentError] = useState("");
   const [isInitialized, setIsInitialized] = useState(false);
@@ -94,19 +103,54 @@ const Dashboard = () => {
 
     init();
   }, [authenticated, user]);
-  //handle deployment
+
+  useEffect(() => {
+    async function fetchUserId() {
+      if (authenticated && user?.email?.address) {
+        const fetchedUserId = await getUserIdByEmail(user?.email?.address);
+        console.log(fetchUserId);
+        console.log(user.email.address);
+        setUserId(fetchedUserId);
+      }
+    }
+
+    fetchUserId();
+  }, [authenticated, user]);
+
   const handleDeploy = async () => {
     setIsDeploying(true);
     setDeploymentError("");
 
     try {
       //1. check if we have web3storage client initiallized
+      if (!isInitialized) {
+        throw new Error("Clients not initialized");
+      }
       //2.  check if user id exists
+      if (userId === null) {
+        throw new Error("User not authenticated or ID not found");
+      }
       //3. createwebpagewithname
+      const { webpage, txHash, cid, deploymentUrl, name, w3nameUrl } =
+        await createWebpageWithName(userId, domain, content);
       //4. update deployed url
+      setDeployedUrl(w3nameUrl || deploymentUrl);
       //5. setweb3name
+      setW3name(name);
+      console.log(
+        `Deployed successfully. Transaction hash: ${txHash}, CID: ${cid}, URL: ${
+          w3nameUrl || deploymentUrl
+        }, W3name: ${name}`
+      );
       //6. update users webpages or refresh user webpages
-    } catch (error) {}
+      const updatedWebpages = await getUserWebpages(userId);
+      setUserWebpages(updatedWebpages as Webpage[]);
+    } catch (error) {
+      console.error("Deployment failed:", error);
+      setDeploymentError("Deployment failed. Please try again.");
+    } finally {
+      setIsDeploying(false);
+    }
   };
 
   //handle Update
@@ -135,7 +179,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  {/* {userWebpages.length} */}
+                  {userWebpages?.length}
                 </div>
               </CardContent>
             </Card>
@@ -149,8 +193,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  N/A
-                  {/* {userWebpages.length > 0
+                  {userWebpages.length > 0
                     ? new Date(
                         Math.max(
                           ...userWebpages
@@ -158,7 +201,7 @@ const Dashboard = () => {
                             .map((w) => w.deployments!.deployedAt!.getTime())
                         )
                       ).toLocaleDateString()
-                    : "N/A"} */}
+                    : "N/A"}
                 </div>
               </CardContent>
             </Card>
@@ -172,7 +215,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  {/* {userWebpages.filter((w) => w.deployments).length} */}
+                  {userWebpages.filter((w) => w.deployments).length}
                 </div>
               </CardContent>
             </Card>
@@ -217,19 +260,20 @@ const Dashboard = () => {
                       />
                     </div>
                     <Button
-                      onClick={selectedWebpage ? handleUpdate : handleDeploy}
-                      // disabled={
-                      //   isDeploying ||
-                      //   !domain ||
-                      //   !content ||
-                      //   !isInitialized ||
-                      //   userId === null
-                      // }
+                      // onClick={selectedWebpage ? handleUpdate : handleDeploy}
+                      onClick={handleDeploy}
+                      disabled={
+                        isDeploying ||
+                        !domain ||
+                        !content ||
+                        !isInitialized ||
+                        userId === null
+                      }
                       size="lg"
                       className="bg-blue-600 hover:bg-blue-500 text-white"
                     >
                       {selectedWebpage ? "Update Website" : "Deploy to HTTP3"}
-                      {/* {isDeploying ? (
+                      {isDeploying ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                           {selectedWebpage ? "Updating..." : "Deploying..."}
@@ -238,17 +282,38 @@ const Dashboard = () => {
                         "Update Website"
                       ) : (
                         "Deploy to HTTP3"
-                      )} */}
+                      )}
                     </Button>
-                    {/* {deploymentError && (
+                    {deploymentError && (
                       <p className="text-red-400 mt-2">{deploymentError}</p>
                     )}
                     {deployedUrl && (
                       <DeploymentVisual deployedUrl={deployedUrl} />
-                    )} */}
+                    )}
                   </div>
                 </CardContent>
               </Card>
+
+              {content && (
+                <Card className="mt-4 bg-[#0a0a0a] border-[#18181b]">
+                  <CardHeader>
+                    <CardTitle className="text-white">Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="border border-[#18181b] p-4 rounded-lg">
+                      <iframe
+                        srcDoc={content}
+                        style={{
+                          width: "100%",
+                          height: "400px",
+                          border: "none",
+                        }}
+                        title="Website Preview"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </>
           )}
         </div>
