@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Globe,
   Shield,
@@ -28,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { usePrivy } from "@privy-io/react-auth";
+import { initializeClients } from "@/utils/db/actions";
 
 type Webpage = {
   webpages: {
@@ -56,18 +58,56 @@ const Dashboard = () => {
     { name: "Example Websites", icon: Globe },
     { name: "Smart Contracts", icon: Shield },
   ];
+  const { user, authenticated } = usePrivy();
+  const [code, setCode] = useState(``);
   const [activeTab, setActiveTab] = React.useState("Sites");
   const [domain, setDomain] = useState("");
   const [deployedUrl, setDeployedUrl] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
+  const [livePreview, setLivePreview] = useState(code);
   const [content, setContent] = useState("");
   const [deploymentError, setDeploymentError] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
   const [selectedWebpage, setSelectedWebpage] = React.useState<Webpage | null>(
     null
   );
 
+  useEffect(() => {
+    // Update live preview when code changes
+    setLivePreview(code);
+  }, [code]);
+
+  useEffect(() => {
+    async function init() {
+      if (authenticated && user?.email?.address) {
+        try {
+          console.log(user);
+
+          await initializeClients(user.email.address);
+          setIsInitialized(true);
+        } catch (error) {
+          console.error("Failed to initialize clients:", error);
+          setDeploymentError("");
+        }
+      }
+    }
+
+    init();
+  }, [authenticated, user]);
   //handle deployment
-  const handleDeploy = async () => {};
+  const handleDeploy = async () => {
+    setIsDeploying(true);
+    setDeploymentError("");
+
+    try {
+      //1. check if we have web3storage client initiallized
+      //2.  check if user id exists
+      //3. createwebpagewithname
+      //4. update deployed url
+      //5. setweb3name
+      //6. update users webpages or refresh user webpages
+    } catch (error) {}
+  };
 
   //handle Update
   const handleUpdate = async () => {};
