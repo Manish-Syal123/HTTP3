@@ -262,13 +262,13 @@ const Dashboard = () => {
                     <Button
                       // onClick={selectedWebpage ? handleUpdate : handleDeploy}
                       onClick={handleDeploy}
-                      // disabled={
-                      //   isDeploying ||
-                      //   !domain ||
-                      //   !content ||
-                      //   !isInitialized ||
-                      //   userId === null
-                      // }
+                      disabled={
+                        isDeploying ||
+                        !domain ||
+                        !content ||
+                        !isInitialized ||
+                        userId === null
+                      }
                       size="lg"
                       className="bg-blue-600 hover:bg-blue-500 text-white"
                     >

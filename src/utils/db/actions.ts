@@ -14,26 +14,41 @@ let web3StorageClient: any;
 let contract: ethers.Contract;
 
 export async function initializeClients(userEmail: string) {
-  web3StorageClient = await create();
+  try {
+    // Initialize the Web3.Storage client
+    web3StorageClient = await create();
 
-  // Authenticate and select a space using the user's email
-  await web3StorageClient.login(userEmail);
-  const spaces = await web3StorageClient.spaces(); // spaces is like a folder in web3storage
-  if (spaces.length > 0) {
-    await web3StorageClient.setCurrentSpace(spaces[0].did());
-  } else {
-    throw new Error("No spaces available. Please create a space first.");
+    await web3StorageClient.login(userEmail);
+
+    let spaces = await web3StorageClient.spaces();
+
+    // If no spaces are available, create one
+    if (spaces.length === 0) {
+      console.log("No spaces available. Creating a new space...");
+      const newSpace = await web3StorageClient.createSpace("Default Space");
+      await web3StorageClient.setCurrentSpace(newSpace.did());
+      console.log("Space created and set as current:", newSpace.did());
+    } else {
+      // Set the first available space as the current space
+      await web3StorageClient.setCurrentSpace(spaces[0].did());
+      console.log("Using existing space:", spaces[0].did());
+    }
+
+    const provider = new ethers.JsonRpcProvider("https://pre-rpc.bt.io");
+    const signer = await provider.getSigner();
+
+    // Initialize the smart contract
+    contract = new ethers.Contract(
+      "0x7be8dD25efAC4e9DF5651FbABf9EAc71A5E6C8bE",
+      WebpageStorageABI.abi,
+      signer
+    );
+
+    console.log("Clients initialized successfully.");
+  } catch (error) {
+    console.error("Error in initializeClients:", error);
+    throw error;
   }
-
-  const provider = new ethers.JsonRpcProvider("https://pre-rpc.bt.io/");
-  const signer = await provider.getSigner();
-
-  contract = new ethers.Contract(
-    // process.env.Smart_contract_Deployed_Address!,
-    "0x7be8dD25efAC4e9DF5651FbABf9EAc71A5E6C8bE",
-    WebpageStorageABI.abi,
-    signer
-  );
 }
 
 export async function getUserWebpages(userId: number | null) {
